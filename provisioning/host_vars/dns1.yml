@@ -1,0 +1,77 @@
+---
+bind_blackhole_malwaredomain_blocklist_url: 'http://mirror2.malwaredomains.com/files/justdomains'
+bind_fqdn_name: dns1.myzone.net
+bind_postmaster_name: postmaster.myzone.net
+bind_acls: 
+  acl1:
+    values: ['172.16.0.0/16' ,'127.0.0.1']
+  acl2:
+    values:
+      - '172.17.0.0/16'
+      - '192.168.2.0/24'
+      - '127.0.0.1'
+      - '172.18.0.0'
+bind_options_allow_recursion: ['acl1']
+bind_options_allow_query: ['acl1','acl2']
+#bind_options_empty_zones_enable: 'no'
+bind_options_additionals: []
+bind_options_forwarders: ['10.138.89.100','10.138.89.101']
+bind_logging_channels:
+   default:
+     out: syslog daemon
+     severity: info
+   update_log:
+     severity: "debug 3"
+     file: "logs/update.log"
+     print_time: yes
+     print_category: yes
+     print_severity: yes
+
+bind_logging_categories:
+   default:
+     values: [ 'default']
+   update:
+     values: [ 'update_log' ]
+bind_keys:
+  key1:
+    secret: 'NWY0ZGNjM2I1YWE3NjVkNjFkODMyN2RlYjg4MmNmOTk='
+  key2:
+    secret: 'NWU4ODQ4OThkYTI4MDQ3MTUxZDBlNTZmOGRjNjI5Mjc3MzYwM2QwZDZhYWJiZGQ2MmExMWVmNzIxZDE1NDJkOA=='
+    algorithm: 'hmac-sha256'
+  ddns-key:
+    algorithm: 'hmac-md5'
+    secret: 'cRweA+41mHv+aVcv2ZDI4A=='
+bind_zones:
+   zone_1:
+     name: "myzone.net"
+     type: master
+     parameters:
+       - 'allow-update { key "key1"; }'
+   zone_2:
+     name: "forwarded.com"
+     file: "master/myfile_forwarded.com.db"
+     type: master
+     parameters:
+       - 'allow-update { key "key1"; }'
+   zone_192:
+     name: "1.168.192.IN-ADDR.ARPA"
+     type: master
+   zone_dhcp_home:
+     name: 'dhcp-home'
+     type: master
+     parameters:
+       - 'allow-update { key "ddns-key"; }'
+   zone_home:
+     name: 'home'
+     type: master
+   zone_172:
+     name: "1.31.172.IN-ADDR.ARPA"
+     type: master
+   zone_172_static:
+     name: "1.31.172.static.IN-ADDR.ARPA"
+     type: master
+   zone_172_dhcp:
+     name: "1.31.172.dhcp.IN-ADDR.ARPA"
+     type: master
+     parameters:
+       - 'allow-update { key "ddns-key"; }'

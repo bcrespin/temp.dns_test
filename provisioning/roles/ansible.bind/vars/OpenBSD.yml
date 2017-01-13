@@ -1,0 +1,3 @@
+---
+root_group: wheel
+bind_service_name: isc_named

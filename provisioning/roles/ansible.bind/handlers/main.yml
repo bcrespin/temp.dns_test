@@ -1,0 +1,4 @@
+---
+# handlers file for ansible.bind
+- name: service reload
+  service: name={{ bind_service_name }} state=reloaded enabled=yes

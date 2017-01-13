@@ -1,0 +1,7 @@
+---
+- name: dns server
+  hosts: dns1
+  become: true
+  roles:
+    - ansible.bind
+

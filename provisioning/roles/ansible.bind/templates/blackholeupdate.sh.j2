@@ -1,0 +1,6 @@
+#!/bin/sh
+
+## this file is ansible managed
+## do not edit by hand
+
+ftp -o - {{ bind_blackhole_malwaredomain_blocklist_url }} | grep -v '^#' | grep -v '^$' | awk '{ print "zone \"" $1 "\" { type master; file \"{{ bind_blackhole_folder }}/{{ bind_blackhole_zonefile }}\"; check-names ignore; };" }' >  {{ bind_blackhole_include_zones }}

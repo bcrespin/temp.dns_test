@@ -1,0 +1,19 @@
+---
+# tasks file for ansible.bind
+
+#- name: install.yml
+#  tags: [ 'bind']
+- name: Gathering OS specific variables
+  include_vars: '{{ item }}'
+  with_first_found:
+    - files:
+      - "{{ ansible_distribution }}.{{ ansible_distribution_release }}.yml"
+      - "{{ ansible_distribution }}.yml"
+      - "{{ ansible_os_family }}.yml"
+      skip: 'true' 
+  tags: [ 'bind']
+
+- include: configure.yml
+  tags: [ 'bind']
+
+

@@ -1,0 +1,137 @@
+# this host is managed by ansible
+# do not edit modify this file
+
+## acls
+##########
+{% if bind_acls|length > 0 %}
+{% for key,value  in bind_acls.iteritems() %}
+acl "{{ key }}" {
+{% for k,v in value.iteritems() %}
+{% for item in v%}
+	{{ item }};
+{% endfor %}
+{% endfor %}
+};
+{% endfor %}
+{% endif %}
+
+# options
+##########
+options {
+	version {{ bind_options_version }};
+	listen-on { {% for item in bind_options_listen_ipv4 %} {{ item }}; {% endfor %} };
+{% if bind_options_listen_ipv6|length > 0 %}
+	listen-on-v6 { {% for item in bind_options_listen_ipv6 %} {{ item }}; {% endfor %} };
+{% endif %}
+	empty-zones-enable {{ bind_options_empty_zones_enable }};
+{% if bind_options_allow_recursion|length > 0 %}
+	allow-recursion { {% for item in bind_options_allow_recursion %} "{{ item }}"; {% endfor %} };
+{% endif %}
+{% if bind_options_allow_query|length > 0 %}
+	allow-query { {% for item in bind_options_allow_query %} "{{ item }}"; {% endfor %} };
+{% endif %}
+{% if bind_options_max_ncache_ttl %}
+	max-ncache-ttl {{ bind_options_max_ncache_ttl }};
+{% endif %}
+{% if bind_options_forwarders|length > 0 %}
+	forwarders {
+{% for fwd in bind_options_forwarders %}
+		{{ fwd }};
+{% endfor %}
+	};
+{% endif %}
+{% if bind_options_additionals|length > 0 %}
+{% for opt in  bind_options_additionals %}
+	{{ opt }};
+{% endfor %}
+{% endif %}
+};
+
+# logging
+##########
+{% if (bind_logging_channels|length > 0) or (bind_logging_categories|length > 0) %}
+logging {
+{% if bind_logging_channels|length > 0 %}
+{% for key,value in bind_logging_channels.iteritems() %}
+	channel "{{ key }}" {
+{% if value.file is defined %}
+		file "{{ value.file }}";
+{% else %}
+		{{ value.out }};
+{% endif %}
+{% if value.print_category is defined %}
+		print-category {{ value.print_category }};
+{% endif %}
+{% if value.print_severity is defined %}
+		print-severity {{ value.print_severity }};
+{% endif %}
+{% if value.print_time is defined %}
+		print-time {{ value.print_time }};
+{% endif %}
+{% if value.severity is defined %}
+		severity {{ value.severity }}; 
+{% endif %}
+{# end of channel #}
+	};
+{% endfor %}
+{% endif %}
+{% if bind_logging_categories|length > 0 %}
+{% for key,value in bind_logging_categories.iteritems() %}
+	category "{{ key }}" {
+{% for key2,value2 in value.iteritems() %}
+{% for item in value2 %}
+		"{{ item }}";
+{% endfor %}
+{% endfor %}
+{# end of category #}
+	};
+{% endfor %}
+{% endif %}
+};
+{% endif %}
+
+# keys
+#########
+{% if bind_keys|length > 0 %}
+{% for k,v in bind_keys.iteritems() %}
+key "{{ k }}" {
+	algorithm {{ v.algorithm|default( bind_default_algorithm ) }};
+	secret "{{ v.secret }}";	
+};
+{% endfor %}
+{% endif %}
+
+# zones
+#########
+
+{% if bind_options_forwarders == [] %}
+zone "." {
+	type hint;
+	file "{{ bind_root_hint_file }}";
+};
+{% endif %}
+
+{% if bind_blackhole_malwaredomain_blocklist_url != '' %}
+# blackhole domain from {{ bind_blackhole_malwaredomain_blocklist_url }}
+include "{{ bind_blackhole_folder }}/{{ bind_blackhole_include_zones }}";
+{% endif %}
+
+{% if bind_zones | length >0 %}
+{% for k,v in bind_zones.iteritems() %}
+zone "{{ v.name }}" {
+	type {{ v.type }};
+{% if v.file is defined %}
+	file "{{ v.file }}";
+{% else %}
+	file "{{ v.type }}/{{ v.name }}.db";
+{% endif %}
+{% if v.parameters is defined %}
+{% for param in v.parameters %}
+	{{ param }};
+{% endfor %}
+{% endif %}
+};
+{% endfor %}
+{% endif %}
+
+

@@ -1,0 +1,14 @@
+; this file ansible managed
+; do not edit by hand
+$TTL 86400
+@	IN	SOA	{{ bind_fqdn_name }}. {{ bind_postmaster_name }}.  (
+                        10
+                        28800   ; refresh  8 hours
+                        7200    ; retry    2 hours
+                        864000  ; expire  10 days
+                        86400 ) ; min ttl  1 day
+	IN	NS	{{ bind_fqdn_name }}. 
+
+        IN	A	{{ bind_blackhole_hole_ip }} 
+*       IN	A	{{ bind_blackhole_hole_ip }}
+ 

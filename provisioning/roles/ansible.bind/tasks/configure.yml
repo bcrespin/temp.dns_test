@@ -1,0 +1,21 @@
+---
+- name: create blackhole folder
+  file: path={{ bind_directory }}/{{ bind_blackhole_folder }}  owner=root group={{ root_group }} mode=755 state=directory 
+  when: bind_blackhole_malwaredomain_blocklist_url != ''
+
+- name: generate blackhole download script
+  template: src=blackholeupdate.sh.j2  dest={{ bind_directory }}/{{ bind_blackhole_folder }}/blackholeupdate.sh owner=root group={{ root_group }} mode=750 
+  when: bind_blackhole_malwaredomain_blocklist_url != ''
+
+- name: generate blackhole zonefile
+  template: src=blackholedomain.fake.zone.j2 dest={{ bind_directory }}/{{ bind_blackhole_folder }}/{{ bind_blackhole_zonefile }} owner=root group={{ root_group }} mode=644
+  when: bind_blackhole_malwaredomain_blocklist_url != ''
+
+- name: named.conf file
+  template: src=named.conf.j2 dest={{ bind_directory }}/etc/named.conf
+  notify: service reload
+  register: result
+ 
+- name: ensure service started
+  service: name={{ bind_service_name }} state=started enabled=yes
+  when: result.changed == false

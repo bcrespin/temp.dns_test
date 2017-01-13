@@ -1,0 +1,61 @@
+---
+# defaults file for ansible.bind
+bind_service_name: named
+bind_blackhole_malwaredomain_blocklist_url: ''
+bind_blackhole_folder: 'blackhole'
+bind_blackhole_zonefile: 'blackholedomain.fake.zone'
+bind_blackhole_include_zones: 'blackholedomains.list'
+bind_blackhole_hole_ip: '127.0.0.1'
+bind_fqdn_name: "{{ ansible_fqdn }}"
+bind_postmaster_name: "postmaster.{{ ansible_fqdn }}"
+bind_check_names: warn			#fail |ignore|warn
+root_group: root
+bind_acls: []
+bind_blakchole_enabled: false
+bind_default_algorithm: 'hmac-md5'
+bind_directory: '/var/named'
+bind_pid_file: '/var/run/named/pid'
+bind_root_hint_file: 'etc/root.hint'
+bind_dump_file: 
+bind_options_version: '""'
+bind_options_empty_zones_enable: 'yes'
+bind_logging_channels: []
+bind_logging_categories: []
+bind_statistics_file:
+bind_options_listen_ipv4: ['127.0.0.1']
+bind_options_listen_ipv6: []
+bind_options_max_ncache_ttl: 30
+bind_options_recursion: 'yes'
+bind_options_allow_query: []
+bind_options_allow_recursion: []
+bind_options_forwarders: []
+bind_zone_dot_file_location: 'etc/root.hint'
+
+bind_config_master_zones_path: "master/"
+##bind_config_master_zones:
+##  - name: masterzone1.com
+##  - allow_transferts: ['localhost','acl2']
+##  - notify: yes
+##  - also_notify: ['127.0.0.5']
+##  - allow_update: ['key1]
+##  - allow_transfer: ['acl1']
+##  - records_list: 
+##      - www  A 172.16.1.1      
+##      - smtp A 172.16.1.2
+bind_config_slave_zones_path: "slave/"
+bind_config_slave_zones: []
+## bind_config_slave_zones:
+##  - zone: slaveX.com
+##    masters: ['127.0.0.10',"127.0.0.11']
+##      masterfile_format: 'text'
+
+bind_config_forward_zones: []
+## bind_config_forward_zones:
+##  - zone: forwardedx.com
+##    masters: ['127.0.0.1','127.0.0.2']
+##    forward_mode: only
+##  - name: forwardedx.net
+##    masters: ['127.0.0.3','127.0.0.4']
+##    forward_mode: first
+
+
