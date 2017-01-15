@@ -1,0 +1,35 @@
+---
+zone_home:
+  name: home
+  refresh: 3h
+  retry: 15
+  expire: 1w
+  nxdomain_ttl: 3h
+  default_ttl: 86400
+  records:
+    - { name: @ , type: NS , rdata: dns1.home. }
+    - { name: dns1 , type: A , rdata: 172.31.1.254 }
+    - { name: testttl , type: A, ttl: 14400 , rdata: 172.31.1.222 }
+
+zone_172_31_1_static_rev:
+  name: 1.31.172.static.in-addr.arpa
+  records:
+    - { name: @ , type: NS , rdata: dns1.home. }
+    - { name: 254, type: PTR , rdata: dns1.home. }
+
+zone_172_31_1_rev:
+  name: 1.31.172.in-addr.arpa
+  records:
+    - { name: @ , type: NS , rdata: dns1.home. }
+    - { name: "$GENERATE 1-63 $" type: CNAME , rdata: "$.1.31.172.static.in-addr.arpa." }
+    - { name: "$GENERATE 64-96 $" type: CNAME , rdata: "$.1.31.172.dhcp.in-addr.arpa." }
+    - { name: "$GENERATE 97-209 $" type: CNAME , rdata: "$.1.31.172.static.in-addr.arpa." }
+    - { name: "$GENERATE 210-240 $" type: CNAME, rdata: "$.1.31.172.dhcp.in-addr.arpa." }
+    - { name: "$GENERATE 241-254 $" type: CNAME , rdata: "$.1.31.172.static.in-addr.arpa." }
+
+zone_rpz_static_dhcp:
+    name: rpz-static-dhcp
+    records:
+      - { name: "$ORIGIN {{ zone_home.name }}" }
+      - { name: "$INCLUDE {{ bind_config_master_zones_path }}/{{ zone_home.name }}_ansible_records.db" }
+      - { name: "*" , type: CNAME , rdata: "*.dhcp." }

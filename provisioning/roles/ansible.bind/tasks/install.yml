@@ -1,0 +1,9 @@
+---
+- name: obtain real package name
+  set_fact: 
+    bind_package_name: "{{ bind_package_name|default ( _bind_package_name ) }}"
+
+- debug: var=bind_package_name
+
+- name: install bind package 
+  openbsd_pkg: name={{ bind_package_name }} state=present

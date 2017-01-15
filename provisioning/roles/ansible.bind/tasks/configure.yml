@@ -11,6 +11,13 @@
   template: src=blackholedomain.fake.zone.j2 dest={{ bind_directory }}/{{ bind_blackhole_folder }}/{{ bind_blackhole_zonefile }} owner=root group={{ root_group }} mode=644
   when: bind_blackhole_malwaredomain_blocklist_url != ''
 
+- name: TEMP - empty blackhole domains list
+  file: path={{ bind_directory }}/{{ bind_blackhole_folder }}/blackholedomains.list state=touch
+
+- name: create additional folder
+  file: path={{ bind_directory }}/{{ item }} owner={{ bind_user }} group={{ bind_group }} mode=0755 state=directory
+  with_items: ['logs','dynamic' ]
+
 - name: named.conf file
   template: src=named.conf.j2 dest={{ bind_directory }}/etc/named.conf
   notify: service reload
