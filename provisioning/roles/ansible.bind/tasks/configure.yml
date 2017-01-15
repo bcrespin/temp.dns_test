@@ -7,8 +7,17 @@
     group: "{{ root_group }}"
   with_dict: "{{ bind_zones }}"
   when: item.value.managed
-  register: result
+  register: res
 
+- name: list zones that are updated
+  set_fact:
+    zones_to_update: "{{ zones_to_update|default([]) }} + ['{{ item.item.key }}']"
+  when: "{{item.changed == true}}"
+  with_items: "{{ res.results }}" 
+
+- name: debug
+  debug: msg="{{ zones_to_update }}"
+  
 - name: create blackhole folder
   file: path={{ bind_directory }}/{{ bind_blackhole_folder }}  owner=root group={{ root_group }} mode=755 state=directory 
   when: bind_blackhole_malwaredomain_blocklist_url != ''
