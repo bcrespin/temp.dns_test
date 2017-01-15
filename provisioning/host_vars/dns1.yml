@@ -1,20 +1,14 @@
 ---
 bind_blackhole_malwaredomain_blocklist_url: 'http://mirror2.malwaredomains.com/files/justdomains'
-bind_fqdn_name: dns1.myzone.net
-bind_postmaster_name: postmaster.myzone.net
+bind_dns_fqdn_name: dns1.home
+bind_hostmaster_name: hostmaster.home
 bind_acls: 
-  acl1:
-    values: ['172.16.0.0/16' ,'127.0.0.1']
-  acl2:
-    values:
-      - '172.17.0.0/16'
-      - '192.168.2.0/24'
-      - '127.0.0.1'
-      - '172.18.0.0'
-bind_options_allow_recursion: ['acl1']
-bind_options_allow_query: ['acl1','acl2']
-#bind_options_empty_zones_enable: 'no'
-bind_options_additionals: []
+  goodclients:
+    values: ['172.16.0.0/16' ,'127.0.0.1','10.0.0.0/8','192.168.0.0/16']
+bind_options_allow_recursion: ['goodclients']
+bind_options_allow_query: ['goodclients']
+bind_options_additionals:
+  - 'response-policy { zone "rzp_static_dhcp"; }'
 bind_options_forwarders: ['10.138.89.100','10.138.89.101']
 bind_logging_channels:
    default:
@@ -39,6 +33,7 @@ bind_zones:
    zone_home_dhcp:
      name: 'home.dhcp'
      type: master
+     dynamic: true
      managed: false
      parameters:
        - 'allow-update { key "ddns-key"; }'
@@ -46,7 +41,7 @@ bind_zones:
      name: 'home'
      type: master
      managed: true
-     content: {{ zone_home }}
+     content: "{{ zone_home }}"
    zone_172_31_1_rev:
      name: "1.31.172.in-addr.arpa"
      type: master
@@ -61,13 +56,14 @@ bind_zones:
      name: "1.31.172.dhcp.in-addr.arpa"
      type: master
      managed: false
+     dynamic: true
      parameters:
        - 'allow-update { key "ddns-key"; }'
    zone_rzp_static_dhcp:
-     name: "rzp_static_dhcp";
+     name: "rzp_static_dhcp"
      type: master
-     rzp: true
      managed: true
+     dynamic: true
      content: "{{ zone_rpz_static_dhcp }}"
      parameters:
        - 'allow-query { none; }'

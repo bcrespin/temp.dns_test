@@ -1,4 +1,14 @@
 ---
+- name: create or update include zone datas
+  template:
+    src: zone_include.j2
+    dest: "{{ bind_directory }}/{{ bind_config_master_zones_path }}/{{ item.value.name }}_ansible_include" 
+    owner: root
+    group: "{{ root_group }}"
+  with_dict: "{{ bind_zones }}"
+  when: item.value.managed
+  register: result
+
 - name: create blackhole folder
   file: path={{ bind_directory }}/{{ bind_blackhole_folder }}  owner=root group={{ root_group }} mode=755 state=directory 
   when: bind_blackhole_malwaredomain_blocklist_url != ''
@@ -14,15 +24,25 @@
 - name: TEMP - empty blackhole domains list
   file: path={{ bind_directory }}/{{ bind_blackhole_folder }}/blackholedomains.list state=touch
 
-- name: create additional folder
+- name: create additional folders
   file: path={{ bind_directory }}/{{ item }} owner={{ bind_user }} group={{ bind_group }} mode=0755 state=directory
-  with_items: ['logs','dynamic' ]
+  with_items: ['logs','{{ bind_config_dynamic_zones_path }}','{{ bind_config_slave_zones_path }}' ]
 
 - name: named.conf file
   template: src=named.conf.j2 dest={{ bind_directory }}/etc/named.conf
   notify: service reload
   register: result
- 
+
+- name: create unmanaged zone files
+  template:
+    src: basic_zone.db.j2
+    dest: "{{ bind_directory }}/{{ bind_config_dynamic_zones_path if item.value.dynamic|default(false) else  bind_config_master_zones_path if item.value.type == 'master' else bind_config_slave_zones_path }}/{{ item.value.name }}.db"
+    force: no
+    owner: "{{ bind_user }}"
+    group: "{{ bind_group }}"
+  with_dict: "{{ bind_zones }}"
+  when: item.value.managed == false
+
 - name: ensure service started
   service: name={{ bind_service_name }} state=started enabled=yes
   when: result.changed == false

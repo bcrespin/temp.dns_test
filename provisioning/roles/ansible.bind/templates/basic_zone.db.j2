@@ -1,0 +1,9 @@
+$TTL {{ bind_zone_default_ttl }}
+@		SOA	{{ bind_dns_fqdn_name }}. {{ bind_hostmaster_name }}. (
+				1 ; serial
+			      	{{ bind_zone_default_refresh }} ; refresh
+			      	{{ bind_zone_default_retry }} ; retry
+			      	{{ bind_zone_default_expire }} ; expire
+			     	{{ bind_zone_default_nxdomain_ttl }} ; nxdomain ttl
+			     )
+		NS	{{ bind_dns_fqdn_name }}.

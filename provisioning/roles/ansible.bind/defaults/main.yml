@@ -9,8 +9,8 @@ bind_blackhole_folder: 'blackhole'
 bind_blackhole_zonefile: 'blackholedomain.fake.zone'
 bind_blackhole_include_zones: 'blackholedomains.list'
 bind_blackhole_hole_ip: '127.0.0.1'
-bind_fqdn_name: "{{ ansible_fqdn }}"
-bind_postmaster_name: "postmaster.{{ ansible_fqdn }}"
+bind_dns_fqdn_name: "{{ ansible_fqdn }}"
+bind_hostmaster_name: "postmaster.{{ ansible_fqdn }}"
 bind_check_names: warn			#fail |ignore|warn
 root_group: root
 bind_acls: []
@@ -37,6 +37,7 @@ bind_zone_default_retry: 15
 bind_zone_default_refresh: 3h
 bind_zone_default_expire: 1w
 bind_zone_default_nxdomain_ttl: 3h 
+bind_zone_default_ttl: 86400
 bind_config_master_zones_path: "master/"
 bind_config_slave_zones_path: "slave/"
 bind_config_dynamic_zones_path: "dynamic/"
