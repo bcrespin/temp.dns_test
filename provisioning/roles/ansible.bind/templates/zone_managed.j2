@@ -1,0 +1,12 @@
+; ansible managed - do not edit by hand
+$TTL {{ bind_zone_default_ttl }}
+{% set serial = ansible_dns_file_zone_serial_number[bind_directory +'/' + bind_config_master_zones_path +'/'+ bind_zones[item].name +'.db']  %}
+@		SOA	 {{ bind_dns_fqdn_name }}. {{ bind_hostmaster_name }}. (
+                                {{ serial }} ; serial
+                                {{ bind_zones[item].refresh|default(bind_zone_default_refresh) }} ; refresh
+                                {{ bind_zones[item].retry|default(bind_zone_default_retry) }} ; retry
+                                {{ bind_zones[item].expire|default(bind_zone_default_expire) }} ; expire
+                                {{ bind_zones[item].nxdomain_ttl|default(bind_zone_default_nxdomain_ttl) }} ; nxdomain ttl
+                             )
+                NS      {{ bind_dns_fqdn_name }}.
+

@@ -43,3 +43,4 @@ bind_config_slave_zones_path: "slave/"
 bind_config_dynamic_zones_path: "dynamic/"
 bind_config_slave_zones: []
 bind_config_forward_zones: []
+zones_to_update: []
