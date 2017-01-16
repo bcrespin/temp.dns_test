@@ -1,51 +1,4 @@
 ---
-- name: create or update include zone datas
-  template:
-    src: zone_include.j2
-    dest: "{{ bind_directory }}/{{ bind_config_master_zones_path }}/{{ item.value.name }}_ansible_include" 
-    owner: root
-    group: "{{ root_group }}"
-  with_dict: "{{ bind_zones }}"
-  when: item.value.managed
-  register: res
-
-- name: list zones that are updated
-  set_fact:
-#    zones_to_update: "{{ zones_to_update +  [ item.item.key  +{ 'path': bind_directory +'/' + bind_config_master_zones_path +'/'+ bind_zones[item.item.key].name +'.db' }  ]}}"
-    zones_to_update: "{{ zones_to_update + [ item.item.key ] }}"
-  when: "{{item.changed == true}}"
-  with_items: "{{ res.results }}" 
-
-#- name: debug zone_to_update
-#  debug: msg="{{ zones_to_update }}"
-
-- name: create zone file list to be updated
-  set_fact: 
-     zone_file_list_to_update: "{{ zone_file_list_to_update|default([]) + [  bind_directory +'/' + bind_config_master_zones_path +'/'+ bind_zones[item].name +'.db' ] }}"  
-  with_items: "{{ zones_to_update }}"
-  when: zones_to_update != []
-
-#- name: debug zone_file_to_update
-#  debug: msg="{{ zone_file_list_to_update }}"
-
-- name: get zone serial for zones need to be updated by ansible
-  get_zone_serial: file_zone="{{ zone_file_list_to_update }}"
-  when: zones_to_update != []
-
-#- name: debug soa
-#  debug: msg="{{ ansible_dns_file_zone_serial_number[bind_directory +'/' + bind_config_master_zones_path +'/'+ bind_zones[item].name +'.db'] }}"
-#  with_items: "{{ zones_to_update }}"
-#  when: zones_to_update != []
-
-- name: update zone file
-  template: src=zone_managed.j2 dest= mode=0644 owner=root  group={{ root_group }}  dest="{{ bind_directory }}/{{ bind_config_master_zones_path }}/{{ bind_zones[item].name }}.db"
-  with_items: "{{ zones_to_update }}"
-  when: zones_to_update != []
-
-- name: temp fail for debug
-  fail:
-    msg: "temp fail to debug"
-  
 - name: create blackhole folder
   file: path={{ bind_directory }}/{{ bind_blackhole_folder }}  owner=root group={{ root_group }} mode=755 state=directory 
   when: bind_blackhole_malwaredomain_blocklist_url != ''
@@ -81,6 +34,37 @@
   when: 
     - item.value.managed == false
     - item.value.type != "slave"
+
+- name: create or update include zone datas
+  template:
+    src: zone_include.j2
+    dest: "{{ bind_directory }}/{{ bind_config_master_zones_path }}/{{ item.value.name }}_ansible_include"
+    owner: root
+    group: "{{ root_group }}"
+  with_dict: "{{ bind_zones }}"
+  when: item.value.managed
+  register: res
+
+- name: list zones that are updated
+  set_fact:
+    zones_to_update: "{{ zones_to_update + [ item.item.key ] }}"
+  when: "{{item.changed == true}}"
+  with_items: "{{ res.results }}"
+
+- name: create zone file list to be updated
+  set_fact:
+     zone_file_list_to_update: "{{ zone_file_list_to_update|default([]) + [  bind_directory +'/' + bind_config_master_zones_path +'/'+ bind_zones[item].name +'.db' ] }}"
+  with_items: "{{ zones_to_update }}"
+  when: zones_to_update != []
+
+- name: get zone serial for zones need to be updated by ansible
+  get_zone_serial: file_zone="{{ zone_file_list_to_update }}"
+  when: zones_to_update != []
+
+- name: update zone file
+  template: src=zone_managed.j2 dest= mode=0644 owner=root  group={{ root_group }}  dest="{{ bind_directory }}/{{ bind_config_master_zones_path }}/{{ bind_zones[item].name }}.db"
+  with_items: "{{ zones_to_update }}"
+  when: zones_to_update != []
 
 - name: ensure service started
   service: name={{ bind_service_name }} state=started enabled=yes

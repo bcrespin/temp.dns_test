@@ -8,7 +8,7 @@ bind_acls:
 bind_options_allow_recursion: ['goodclients']
 bind_options_allow_query: ['goodclients']
 bind_options_additionals:
-  - 'response-policy { zone "rzp_static_dhcp"; }'
+  - 'response-policy { zone "rzp-static-dhcp"; }'
 bind_options_forwarders: ['10.138.89.100','10.138.89.101']
 bind_logging_channels:
    default:
@@ -60,10 +60,10 @@ bind_zones:
      parameters:
        - 'allow-update { key "ddns-key"; }'
    zone_rzp_static_dhcp:
-     name: "rzp_static_dhcp"
+     name: "rzp-static-dhcp"
      type: master
      managed: true
-     dynamic: true
-     content: "{{ zone_rpz_static_dhcp }}"
+     dynamic: false
+     content: "{{ zone_rzp_static_dhcp }}"
      parameters:
        - 'allow-query { none; }'

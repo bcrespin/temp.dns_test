@@ -6,12 +6,20 @@ import commands
 import re
 import os
 import os.path
+import re
 
 def get_ansible_dns_file_zone_serial_number(zonefile):
     #print json.dumps(zonefile)
     if os.path.isfile( zonefile ):
-      serial_number = 666
-      ansible_serial_number = int(serial_number) 
+      serial_number = -1
+      with open(zonefile,'r') as f:
+        for line in f:
+          line=line.rstrip()
+          x = re.findall('(\d+) ; serial', line)
+          if len(x) > 0 :
+            serial_number = x[0]
+            break
+      ansible_serial_number = int(serial_number)
     else:
       ansible_serial_number = 0
 
