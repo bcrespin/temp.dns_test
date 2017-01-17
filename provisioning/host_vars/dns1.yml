@@ -48,12 +48,12 @@ bind_zones:
      managed: true
      content: "{{ zone_172_31_1_rev }}"
    zone_172_31_1_static_rev:
-     name: "1.31.172.static.in-addr.arpa"
+     name: "static.1.31.172.in-addr.arpa"
      type: master
      managed: true
      content: "{{ zone_172_31_1_static_rev }}"
    zone_172_31_1_dhcp_rev:
-     name: "1.31.172.dhcp.in-addr.arpa"
+     name: "dhcp.1.31.172.in-addr.arpa"
      type: master
      managed: false
      dynamic: true

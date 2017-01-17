@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
     dnsclient1.vm.hostname ="dnsclient1"
     dnsclient1.vm.box="trombik/ansible-openbsd-6.0-amd64"
     dnsclient1.vm.box_check_update = false
-    dnsclient1.vm.network "private_network", ip: "172.31.1.10", netmask: "255.255.255.0",
+    dnsclient1.vm.network "private_network", type: "dhcp",
       virtualbox__intnet: "home"
 
     dnsclient1.vm.provider "virtualbox" do |vb|

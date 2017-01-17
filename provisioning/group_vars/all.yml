@@ -12,7 +12,7 @@ zone_home:
     - { name: "testttl" , type: "A", ttl: 14400 , rdata: "172.31.1.222" }
 
 zone_172_31_1_static_rev:
-  name: "1.31.172.static.in-addr.arpa"
+  name: "static.1.31.172.in-addr.arpa"
   records:
     - { name: "" , type: "NS" , rdata: "dns1.home." }
     - { name: "254", type: "PTR" , rdata: "dns1.home." }
@@ -21,11 +21,11 @@ zone_172_31_1_rev:
   name: "1.31.172.in-addr.arpa"
   records:
     - { name: "" , type: NS , rdata: dns1.home. }
-    - { name: "$GENERATE 1-63 $" ,type: CNAME , rdata: "$.1.31.172.static.in-addr.arpa." }
-    - { name: "$GENERATE 64-96 $" ,type: CNAME , rdata: "$.1.31.172.dhcp.in-addr.arpa." }
-    - { name: "$GENERATE 97-209 $" ,type: CNAME , rdata: "$.1.31.172.static.in-addr.arpa." }
-    - { name: "$GENERATE 210-240 $" ,type: CNAME, rdata: "$.1.31.172.dhcp.in-addr.arpa." }
-    - { name: "$GENERATE 241-254 $" ,type: CNAME , rdata: "$.1.31.172.static.in-addr.arpa." }
+    - { name: "$GENERATE 1-63 $" ,type: CNAME , rdata: "$.static.1.31.172.in-addr.arpa." }
+    - { name: "$GENERATE 64-96 $" ,type: CNAME , rdata: "$.1.31.172.dhcp.1.31.172.in-addr.arpa." }
+    - { name: "$GENERATE 97-209 $" ,type: CNAME , rdata: "$.static.1.31.172.in-addr.arpa." }
+    - { name: "$GENERATE 210-240 $" ,type: CNAME, rdata: "$.1.31.172.dhcp.1.31.172.in-addr.arpa." }
+    - { name: "$GENERATE 241-254 $" ,type: CNAME , rdata: "$.static.1.31.172.in-addr.arpa." }
 
 zone_rzp_static_dhcp:
     name: "rzp-static-dhcp"

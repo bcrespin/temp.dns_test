@@ -1,0 +1,6 @@
+---
+_dhcpd_package_name: "dhcpcd-"
+_dhcpd_openbsd_buitin: false
+_dhcpd_service_name: "isc_dhcpd"
+dhcpd_config_file: "/etc/dhcpd.conf"
+dhcpd_root_group: wheel

@@ -1,0 +1,7 @@
+---
+- name: config file {{ dhcpd_config_file }}
+  template: src=named.conf.j2 dst={{ dhcpd_config_file }} owner=root group={{ dhcpd_root_group }} mode=0644
+  notify: service reload
+  
+- name: ensure service started
+  service: name={{ dhcpd_service_name|default(_dhcpd_service_name) }} state=started enabled=yes

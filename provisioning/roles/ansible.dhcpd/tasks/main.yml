@@ -1,0 +1,20 @@
+---
+# tasks file for ansible.dhcpd
+#- name: install.yml
+#  tags: [ 'dhcpd']
+- name: Gathering OS specific variables
+  include_vars: '{{ item }}'
+  with_first_found:
+    - files:
+      - "{{ ansible_distribution }}.{{ ansible_distribution_release }}.yml"
+      - "{{ ansible_distribution }}.yml"
+      - "{{ ansible_os_family }}.yml"
+      skip: 'true' 
+  tags: [ 'dhcpd']
+
+- include: install.yml
+  when: ( not dhcpd_openbsd_buitin|default(_dhcpd_openbsd_buitin) )
+  tags: [ 'dhcpd']
+
+- include: configure.yml
+  tags: [ 'dhcpd']

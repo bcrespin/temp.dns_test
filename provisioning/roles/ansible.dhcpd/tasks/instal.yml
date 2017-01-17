@@ -1,0 +1,9 @@
+---
+- name: obtain real package name
+  set_fact: 
+    dhcpd_package_name: "{{ dhcpd_package_name|default ( _dhcpd_package_name ) }}"
+
+- debug: var=dhcpd_package_name
+
+- name: install dhcpd package 
+  openbsd_pkg: name={{ dhcpd_package_name }} state=present
