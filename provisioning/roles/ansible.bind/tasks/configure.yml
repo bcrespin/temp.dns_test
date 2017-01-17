@@ -34,6 +34,7 @@
   when: 
     - item.value.managed == false
     - item.value.type != "slave"
+  notify: service reload
 
 - name: create or update include zone datas
   template:
@@ -44,6 +45,7 @@
   with_dict: "{{ bind_zones }}"
   when: item.value.managed
   register: res
+  notify: service reload
 
 - name: list zones that are updated
   set_fact:

@@ -7,7 +7,7 @@ zone_home:
   nxdomain_ttl: "3h"
   default_ttl: 86400
   records:
-    - { name: "home." , type: "NS" , rdata: "dns1.home." }
+    - { name: "" , type: "NS" , rdata: "dns1.home." }
     - { name: "dns1" , type: "A" , rdata: "172.31.1.254" }
     - { name: "testttl" , type: "A", ttl: 14400 , rdata: "172.31.1.222" }
 
@@ -30,7 +30,7 @@ zone_172_31_1_rev:
 zone_rzp_static_dhcp:
     name: "rzp-static-dhcp"
     records:
-      - { name: "@" , type: "NS" , rdata: "dns1.home." }
+      - { name: "" , type: "NS" , rdata: "dns1.home." }
       - { name: "$ORIGIN {{ zone_home.name }}" }
       - { name: "$INCLUDE {{ bind_config_master_zones_path }}/{{ zone_home.name }}_ansible_include" }
       - { name: "*" , type: CNAME , rdata: "*.dhcp." }

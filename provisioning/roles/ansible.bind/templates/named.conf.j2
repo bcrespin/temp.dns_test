@@ -123,7 +123,7 @@ zone "{{ v.name }}" {
 {% if v.file is defined %}
 	file "{{ v.file }}";
 {% else %}
-	file "{{ v.type }}/{{ v.name }}.db";
+	file "{{ bind_config_dynamic_zones_path  if v.dynamic|default(false) else bind_config_master_zones_path if v.type == 'master' else bind_config_slave_zones_path }}/{{ v.name }}.db";
 {% endif %}
 {% if v.parameters is defined %}
 {% for param in v.parameters %}
