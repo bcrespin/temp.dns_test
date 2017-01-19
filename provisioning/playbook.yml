@@ -3,6 +3,7 @@
   hosts: dns1
   become: true
   roles:
-    - ansible.bind
-    - ansible.dhcpd
+#    - ansible.bind
+#    - ansible.dhcpd
+    - ansible.tftp-syslinux
 

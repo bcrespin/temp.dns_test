@@ -1,0 +1,40 @@
+---
+# tasks file for ansible.tftp-syslinux
+
+- name: ensure tftp folder exist
+  file: path={{ tftp_folder }} state=directory
+
+- name: download syslinux zip file
+  command: ftp {{ tftp_syslinux_url }}
+  args:
+    chdir: "{{ tftp_folder }}"
+    creates: "{{ tftp_folder }}/syslinux-{{ tftp_syslinux_version }}.zip"
+
+- name: store syslinux version in info file
+  copy: content="{{ tftp_syslinux_version }}\r\n" dest={{ tftp_folder }}/syslinux-version.txt
+  register: res
+
+- name: list all syslinux previous version files
+  find: paths="{{ tftp_folder }}" patterns="*.c32,memdisk,lpxelinux.0"
+  when: res.changed
+  register: old
+
+#- name: debug old files
+#  debug: msg="{{ old.files|default('') }}"
+
+- name: remove old syslinux files
+  file: path="{{ item.path }}" state=absent
+  with_items: "{{ old.files|default('') }}"
+  when: res.changed
+
+- name: extract files
+  command: unzip -j -x syslinux-{{ tftp_syslinux_version }}.zip {{ item }} 
+  args:
+    chdir: "{{ tftp_folder }}"
+  with_items: 
+    - "*bios/*/lpxelinux.0"
+    - "*bios/*/ldlinux.c32"
+    - "*bios/com32/menu*.c32"
+    - "*bios/com32/modules/*.c32"
+    - "*memdisk/memdisk"
+  when: res.changed
