@@ -4,12 +4,10 @@
 ## acls
 ##########
 {% if bind_acls|length > 0 %}
-{% for key,value  in bind_acls.iteritems() %}
-acl "{{ key }}" {
-{% for k,v in value.iteritems() %}
-{% for item in v%}
-	{{ item }};
-{% endfor %}
+{% for acl in bind_acls %}
+acl "{{ acl.name }}" {
+{% for addr in acl.addr_list %}
+	{{ addr }};
 {% endfor %}
 };
 {% endfor %}
@@ -52,38 +50,36 @@ options {
 {% if (bind_logging_channels|length > 0) or (bind_logging_categories|length > 0) %}
 logging {
 {% if bind_logging_channels|length > 0 %}
-{% for key,value in bind_logging_channels.iteritems() %}
-	channel "{{ key }}" {
-{% if value.file is defined %}
-		file "{{ value.file }}";
+{% for k in bind_logging_channels %}
+	channel "{{ k.name }}" {
+{% if k.file is defined %}
+		file "{{ k.file.name }}" versions {{ k.file.version|default(false) if k.file.version|default(false) else 'unlimited' }} {{ 'size ' + k.file.size|default(false) if k.file.size|default(false) else '' }} ;
 {% else %}
-		{{ value.out }};
+		{{ k.out }};
 {% endif %}
-{% if value.print_category is defined %}
-		print-category {{ value.print_category }};
+{% if k.print_category is defined %}
+		print-category {{ k.print_category }};
 {% endif %}
-{% if value.print_severity is defined %}
-		print-severity {{ value.print_severity }};
+{% if k.print_severity is defined %}
+		print-severity {{ k.print_severity }};
 {% endif %}
-{% if value.print_time is defined %}
-		print-time {{ value.print_time }};
+{% if k.print_time is defined %}
+		print-time {{ k.print_time }};
 {% endif %}
-{% if value.severity is defined %}
-		severity {{ value.severity }}; 
+{% if k.severity is defined %}
+		severity {{ k.severity }}; 
 {% endif %}
 {# end of channel #}
 	};
 {% endfor %}
 {% endif %}
 {% if bind_logging_categories|length > 0 %}
-{% for key,value in bind_logging_categories.iteritems() %}
-	category "{{ key }}" {
-{% for key2,value2 in value.iteritems() %}
-{% for item in value2 %}
-		"{{ item }}";
+{% for k in bind_logging_categories %}
+	category "{{ k.name }}" {
+{% for x in k.channels %}
+		"{{ x }}";
 {% endfor %}
-{% endfor %}
-{# end of category #}
+# end of category #}
 	};
 {% endfor %}
 {% endif %}
@@ -93,10 +89,10 @@ logging {
 # keys
 #########
 {% if bind_keys|length > 0 %}
-{% for k,v in bind_keys.iteritems() %}
-key "{{ k }}" {
-	algorithm {{ v.algorithm|default( bind_default_algorithm ) }};
-	secret "{{ v.secret }}";	
+{% for k in bind_keys %}
+key "{{ k.key }}" {
+	algorithm {{ k.algorithm|default( bind_default_algorithm ) }};
+	secret "{{ k.secret }}";	
 };
 {% endfor %}
 {% endif %}

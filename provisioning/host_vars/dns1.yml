@@ -14,7 +14,6 @@ dhcpd_zones:
 dhcpd_options: |
     ddns-updates on;
     ddns-update-style interim;
-
 dhcpd_shared_networks:
   - name: "shared-net"
     subnets: '{{ dhcpd_subnets_local }}' 
@@ -39,30 +38,36 @@ bind_blackhole_malwaredomain_blocklist_url: 'http://mirror2.malwaredomains.com/f
 bind_dns_fqdn_name: dns1.home
 bind_hostmaster_name: hostmaster.home
 bind_acls: 
-  goodclients:
-    values: ['172.16.0.0/16' ,'127.0.0.1','10.0.0.0/8','192.168.0.0/16']
+  - name: goodclients
+    addr_list: ['172.16.0.0/16' ,'127.0.0.1','10.0.0.0/8','192.168.0.0/16']
 bind_options_allow_recursion: ['goodclients']
 bind_options_allow_query: ['goodclients']
 bind_options_additionals:
   - 'response-policy { zone "rzp-static-dhcp"; }'
 bind_options_forwarders: ['10.138.89.100','10.138.89.101']
 bind_logging_channels:
-   default:
+   - name: default
      out: syslog daemon
      severity: info
-   update_log:
+   - name: update_log
      severity: "info"
-     file: "logs/update.log"
+     file: 
+       name: "logs/update.log"
+       version: 5
+       size: "3M"
      print_time: yes
      print_category: yes
      print_severity: yes
+   - name: test_log
+     file:
+       name: "logs/test.log"
 bind_logging_categories:
-   default:
-     values: [ 'default']
-   update:
-     values: [ 'update_log' ]
+   - name: default
+     channels: [ 'default']
+   - name: update
+     channels: [ 'update_log' ]
 bind_keys:
-  ddns-key:
+  - key:  "ddns-key"
     algorithm: 'hmac-md5'
     secret: 'cRweA+41mHv+aVcv2ZDI4A=='
 bind_zones:
