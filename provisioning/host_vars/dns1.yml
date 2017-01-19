@@ -1,4 +1,40 @@
 ---
+dhcpd_authoritative: true
+dhcpd_keys:
+  - key: "ddns-key"
+    algorithm: "hmac-md5"
+    secret: 'cRweA+41mHv+aVcv2ZDI4A=='
+dhcpd_zones:
+  - zone: "home.dhcp."
+    primary: "127.0.0.1"
+    key: "ddns-key"
+  - zone: "dhcp.1.31.172.in-addr.arpa."
+    primary: "127.0.0.1"
+    key: "ddns-key"
+dhcpd_options: |
+    ddns-updates on;
+    ddns-update-style interim;
+
+dhcpd_shared_networks:
+  - name: "shared-net"
+    subnets: '{{ dhcpd_subnets_local }}' 
+    options: |
+      default-lease-time 600;
+      max-lease-time 900;
+      option domain-name "home";
+      option domain-name-servers 172.31.1.254;
+dhcpd_subnets_local:
+  - subnet: "172.31.1.0"
+    netmask: '255.255.255.0'
+    router: '172.31.1.254'
+    options: |
+      ddns-domainname "home.dhcp.";
+      ddns-rev-domainname "dhcp.1.31.172.in-addr.arpa.";
+      ignore client-updates;
+    pools:
+      - comment: 'first range'
+        range: '172.31.1.64 172.31.1.96'
+
 bind_blackhole_malwaredomain_blocklist_url: 'http://mirror2.malwaredomains.com/files/justdomains'
 bind_dns_fqdn_name: dns1.home
 bind_hostmaster_name: hostmaster.home
@@ -15,7 +51,7 @@ bind_logging_channels:
      out: syslog daemon
      severity: info
    update_log:
-     severity: "debug 3"
+     severity: "info"
      file: "logs/update.log"
      print_time: yes
      print_category: yes

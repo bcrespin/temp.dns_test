@@ -27,7 +27,7 @@ log-facility {{ dhcpd_log_facility }};
 {{ dhcpd_options }}
 
 {% endif %}
-#{% include 'ipxe.j2' %}
+{#{% include 'ipxe.j2' %} #}
 {% if dhcpd_keys is defined and dhcpd_keys %}
 {% for key in dhcpd_keys %}
 {{ tpl.print_key(key) }}
